@@ -172,6 +172,13 @@ class Dimension:
     def __ne__(self, other):
         return ~Filter(dimension=self.dimension, value=other)
 
+    def in_(self, iterable):
+        """
+        Creates a filter that ensures the dimension matches one of the
+        values in the provided iterable
+        """
+        return Filter(dimension=self.dimension, type="in", values=list(iterable))
+
 
 class JavaScript:
     def __init__(self, dim):
