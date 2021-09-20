@@ -252,6 +252,8 @@ class QueryBuilder(object):
             return datasource
         elif isinstance(datasource, Join):
             return Join.build_join(datasource)
+        elif isinstance(datasource, dict):
+            return datasource
         else:
             return {"type": "union", "dataSources": datasource}
 
