@@ -162,28 +162,33 @@ class LongLeast(Postaggregator):
 
 
 class ThetaSketchOp(object):
-    def __init__(self, fn, fields, name):
+    def __init__(self, fn, fields, name, size=16384):
         self.post_aggregator = {
             "type": "thetaSketchSetOp",
             "name": name,
             "func": fn,
             "fields": fields,
+            "size": size,
         }
         self.name = name
+        self.size = size
 
     def __or__(self, other):
         return ThetaSketchOp(
-            "UNION", self.fields(other), self.name + "_OR_" + other.name
+            "UNION", self.fields(other), self.name + "_OR_" + other.name, size=self.size
         )
 
     def __and__(self, other):
         return ThetaSketchOp(
-            "INTERSECT", self.fields(other), self.name + "_AND_" + other.name
+            "INTERSECT",
+            self.fields(other),
+            self.name + "_AND_" + other.name,
+            size=self.size,
         )
 
     def __ne__(self, other):
         return ThetaSketchOp(
-            "NOT", self.fields(other), self.name + "_NOT_" + other.name
+            "NOT", self.fields(other), self.name + "_NOT_" + other.name, size=self.size
         )
 
     def fields(self, other):
@@ -202,8 +207,8 @@ class ThetaSketchOp(object):
 
 
 class ThetaSketch(ThetaSketchOp):
-    def __init__(self, name):
-        ThetaSketchOp.__init__(self, None, None, name)
+    def __init__(self, name, size=16384):
+        ThetaSketchOp.__init__(self, None, None, name, size)
         self.post_aggregator = {"type": "fieldAccess", "fieldName": name}
 
 
